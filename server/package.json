@@ -1,0 +1,18 @@
+{
+  "name": "navi-ble-server",
+  "version": "0.0.1",
+  "description": "Connects to a SignalK delta stream and delivers data over BLE to displays",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "baconjs": "^1.0.1",
+    "express": "^4.16.2",
+    "noble": "^1.8.1",
+    "ramda": "^0.25.0",
+    "ws": "^4.0.0"
+  }
+}
