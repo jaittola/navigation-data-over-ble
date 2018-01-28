@@ -97,13 +97,13 @@ function logPeripheral(peripheral) {
                 ' with local name ' + peripheral.advertisement.localName)
 }
 
-function writeToPeripheral(peripheral, message) {
+function writeToDevice(device, message) {
     // You can only send at most 20 bytes in a Bluetooth LE packet. Here we assume that
     // message is < 20 bytes and ensure that by truncating it.
     const output = Buffer.from(message, 'ascii').slice(0, 19)
-    console.log("Writing " + output.toString() + " to device " + peripheral.id)
-    peripheral.tx.write(output)
+    console.log("Writing " + output.toString() + " to device " + device.id)
+    device.tx.write(output)
 }
 
 exports.devices = connectedDevices
-exports.writeToPeripheral = writeToPeripheral
+exports.writeToDevice = writeToDevice

@@ -8,6 +8,7 @@ const webserver = require("./lib/webserver.js")
 const signalKDatastream = require("./lib/signalk-datastream.js")
 const formatting = require("./lib/display-output-formatting.js")
 const bleDiscovery = require("./lib/ble-discovery.js")
+const deviceRegistry = require("./lib/device-registry.js")
 
 let uri = "ws://localhost:3000/signalk/v1/stream?subscribe=self"
 
@@ -15,18 +16,16 @@ if (process.argv.length > 2) {
     uri = process.argv[2]
 }
 
+const signalKDataStream = signalKDatastream.receiveMyData(uri)
+const bleDevices = bleDiscovery.devices
+const availableDevices = deviceRegistry(bleDevices)
+
+Bacon.combineWith((value, devices) => [devices.filter(device => device.path === value.path),
+                                       value],
+                  signalKDataStream,
+                  availableDevices)
+    .flatMap(([devices, value]) => Bacon.fromArray(devices).map(device => [device, value] ))
+    .map(([device, value]) => [device, formatting.format(value, device)])
+    .onValue(([device, formattedValue]) => bleDiscovery.writeToDevice(device.device, formattedValue));
+
 webserver.run()
-
-const signalKSog = signalKDatastream.receiveMyData(uri)
-      .filter(signalKValue => signalKValue.path == "navigation.speedOverGround")
-      .map(signalKValue => formatting.format(signalKValue, null))
-
-const devices = bleDiscovery.devices
-
-Bacon.combineWith((devices, sog) => { return { devices: devices, sog: sog } },
-                  devices,
-                  signalKSog)
-    .filter(v => v.devices.length > 0)
-    .onValue(v => {
-        v.devices.forEach(device => bleDiscovery.writeToPeripheral(device, v.sog))
-    })
