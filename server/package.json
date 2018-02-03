@@ -11,6 +11,7 @@
   "dependencies": {
     "baconjs": "^1.0.1",
     "express": "^4.16.2",
+    "express-ws": "^3.0.0",
     "noble": "^1.8.1",
     "ramda": "^0.25.0",
     "ws": "^4.0.0"
