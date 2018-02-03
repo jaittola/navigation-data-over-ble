@@ -18,7 +18,7 @@ if (process.argv.length > 2) {
 
 const signalKDataStream = signalKDatastream.receiveMyData(uri)
 const bleDevices = bleDiscovery.devices
-const availableDevices = deviceRegistry(bleDevices)
+const availableDevices = deviceRegistry(bleDevices).toProperty()
 
 Bacon.combineWith((value, devices) => [devices.filter(device => device.path === value.path),
                                        value],
@@ -28,4 +28,4 @@ Bacon.combineWith((value, devices) => [devices.filter(device => device.path === 
     .map(([device, value]) => [device, formatting.format(value, device)])
     .onValue(([device, formattedValue]) => bleDiscovery.writeToDevice(device.device, formattedValue));
 
-webserver.run()
+webserver.run(signalKDataStream, availableDevices)
