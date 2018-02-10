@@ -26,6 +26,7 @@ Bacon.combineWith((value, devices) => [devices.filter(device => device.path === 
                   availableDevices)
     .flatMap(([devices, value]) => Bacon.fromArray(devices).map(device => [device, value] ))
     .map(([device, value]) => [device, formatting.format(value, device)])
+    .filter(([device, formattedValue]) => formattedValue != null)
     .onValue(([device, formattedValue]) => bleDiscovery.writeToDevice(device.device, formattedValue));
 
 webserver.run(signalKDataStream, availableDevices)
