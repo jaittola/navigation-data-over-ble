@@ -34,29 +34,34 @@
 
     function handleNavdata(navdata, tableBody) {
         if (navdata.path.match(/^(\w|\.)+$/)) {
-            var rowId = "navdata-" + navdata.path
-            var row = document.getElementById(rowId)
-            if (row == null) {
-                insertNavdataValue(tableBody, navdata, rowId)
-            } else {
-                var valueElement = row.getElementsByClassName("navdata-value")[0]
-                if (valueElement != null)
-                    setNavdataValue(valueElement, navdata.value)
-            }
+            setDataToTable("navdata-" + navdata.path, navdata.path, navdata.value, tableBody)
         }
     }
 
-    function insertNavdataValue(tableBody, navdata, rowId) {
+
+    function setDataToTable(rowId, title, value, tableBody) {
+        var row = document.getElementById(rowId)
+        if (row == null) {
+            insertValueToTable(tableBody, title, value, rowId)
+        } else {
+            var valueElement = row.getElementsByClassName("navdata-value")[0]
+            if (valueElement != null)
+                updateValueElement(valueElement, value)
+        }
+    }
+
+    function insertValueToTable(tableBody, title, value, rowId) {
         var row = tableBody.insertRow(-1)
         row.id = rowId
         var pathElement = row.insertCell(0)
-        pathElement.textContent = navdata.path
+        pathElement.classList.add("navdata-key")
+        pathElement.textContent = title
         var valueElement = row.insertCell(1)
         valueElement.classList.add("navdata-value")
-        setNavdataValue(valueElement, navdata.value)
+        updateValueElement(valueElement, value)
     }
 
-    function setNavdataValue(valueElement, value) {
+    function updateValueElement(valueElement, value) {
         if (value instanceof Object) {
             var result = Object.keys(value).sort()
                 .map(function(key) { return key + ": " + value[key] })
@@ -68,7 +73,11 @@
     }
 
     function handleDevices(devicedata, tableBody) {
-
+        console.log("Got devices: " + JSON.stringify(devicedata))
+        devicedata.forEach(function(device) {
+            if (device.id.match(/^[0-9a-fA-F]+$/)) {
+                setDataToTable("devicedata-" + device.id, device.id, device.path, tableBody)
+            }
+        })
     }
-
 })();
